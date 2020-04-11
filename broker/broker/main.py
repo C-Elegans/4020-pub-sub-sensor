@@ -56,7 +56,7 @@ async def update_sensor():
     await appdata.update_sensor(stype, sid, value)
     return "OK"
 
-@app.websocket('/ws')
+@app.websocket('/api/subscribe')
 @collect_websocket
 async def ws(queue):
     data = await websocket.receive()

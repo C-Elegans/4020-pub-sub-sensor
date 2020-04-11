@@ -4,7 +4,7 @@ import websockets
 data = '{"cmd": "subscribe", "sensorid": "1"}'
 
 async def test():
-    uri = "ws://localhost:9000/ws"
+    uri = "ws://localhost:9000/api/subscribe"
     async with websockets.connect(uri) as websocket:
         await websocket.send(data)
         while True:
