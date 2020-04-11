@@ -1,4 +1,4 @@
-from flask import Flask, request, abort
+from flask import Flask, request, abort, jsonify
 
 
 PORT = 9000
@@ -11,6 +11,11 @@ class SensorData:
         self.name = name
         self.value = value
 
+    def json(self):
+        return {"sensorid": self.name,
+                "sensortype": self.stype,
+                "value": self.value}
+
 
 class AppData:
     def __init__(self):
@@ -18,6 +23,11 @@ class AppData:
 
     def update_sensor(self, stype, name, value):
         self.sensors[name] = SensorData(stype, name, value)
+
+    def get_all_sensors(self):
+        lst = list(self.sensors.values())
+        return [x.json() for x in lst]
+
 
 appdata = AppData()
 
@@ -42,6 +52,12 @@ def update_sensor():
     value = request.json.get('value')
     appdata.update_sensor(stype, sid, value)
     return "OK"
+
+
+@app.route('/api/sensor', methods=['GET'])
+def get_sensor():
+    data = appdata.get_all_sensors()
+    return jsonify(data)
 
 
 if __name__ == '__main__':
