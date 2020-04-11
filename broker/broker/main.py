@@ -1,10 +1,10 @@
-from flask import Flask, request, abort, jsonify
+from quart import Quart, request, abort, jsonify
 from broker.appdata import AppData
 import jwt
 
 
 PORT = 9000
-app = Flask(__name__)
+app = Quart(__name__)
 
 
 
@@ -16,16 +16,17 @@ def index():
 
 
 @app.route('/api/sensor', methods=['POST', 'PUT'])
-def update_sensor():
+async def update_sensor():
+    data = await request.get_data()
     # Note, DO NOT USE EXCEPT TO GET KEY
-    claimset = jwt.decode(request.data, verify=False, algorithms=['RS256'])
+    claimset = jwt.decode(data, verify=False, algorithms=['RS256'])
     if not claimset:
         abort(400)
     if 'sensorid' not in claimset:
         abort(400)
     pub_key = appdata.keys.get_public_key(claimset['sensorid'])
 
-    data = jwt.decode(request.data, pub_key, algorithms=['RS256'])
+    data = jwt.decode(data, pub_key, algorithms=['RS256'])
     if not data:
         abort(400)
     if 'sensortype' not in data:
