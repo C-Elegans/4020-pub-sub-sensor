@@ -1,6 +1,9 @@
-from quart import Quart, request, abort, jsonify
+from quart import Quart, request, abort, jsonify, websocket
 from broker.appdata import AppData
+from functools import wraps
+import asyncio
 import jwt
+import json
 
 
 PORT = 9000
@@ -9,6 +12,20 @@ app = Quart(__name__)
 
 
 appdata = AppData()
+appdata.keys.enable_example = True
+appdata.keys.load_example('1')
+
+
+def collect_websocket(func):
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        queue = asyncio.Queue()
+        appdata.connected_websockets.add(queue)
+        try:
+            return await func(queue, *args, **kwargs)
+        finally:
+            appdata.connected_websockets.remove(queue)
+    return wrapper
 
 @app.route('/')
 def index():
@@ -36,9 +53,32 @@ async def update_sensor():
     sid = data['sensorid']
     stype = data['sensortype']
     value = data['value']
-    appdata.update_sensor(stype, sid, value)
+    await appdata.update_sensor(stype, sid, value)
     return "OK"
 
+@app.websocket('/ws')
+@collect_websocket
+async def ws(queue):
+    data = await websocket.receive()
+    data = json.loads(data)
+    if not data:
+        await websocket.send('{"status": "error"}')
+        return
+
+    requested_id = None
+    if 'sensorid' in data:
+        requested_id = data['sensorid']
+    requested_type = None
+    if 'sensortype' in data:
+        requested_type = data['sensortype']
+    while True:
+        msg = await queue.get()
+        if requested_id and msg['sensorid'] != requested_id:
+            continue
+        if requested_type and msg['sensortype'] != requested_type:
+            continue
+        msg = json.dumps(msg)
+        await websocket.send(msg)
 
 @app.route('/api/sensor', methods=['GET'])
 def get_sensor():
@@ -47,5 +87,4 @@ def get_sensor():
 
 
 if __name__ == '__main__':
-    appdata.start_publisher_server()
     app.run(debug=False, port=PORT)

@@ -24,29 +24,13 @@ class AppData:
         self.sensors = {}
         self.keys = Keys()
         self.ws_thread = None
+        self.connected_websockets = set()
 
-    def update_sensor(self, stype, name, value):
-        self.sensors[name] = SensorData(stype, name, value)
+    async def update_sensor(self, stype, name, value):
+        self.sensors[name] = sensor = SensorData(stype, name, value)
+        for queue in self.connected_websockets:
+            await queue.put(sensor.json())
 
     def get_all_sensors(self):
         lst = list(self.sensors.values())
         return [x.json() for x in lst]
-
-    async def hello(self, websocket, path):
-        _ = await websocket.recv()
-        await websocket.send("Hello!")
-
-    def start_publisher_server(self):
-
-        def thread_fun():
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            print("Starting server")
-            server = websockets.serve(self.hello, "", SOCKET_PORT)
-            print("Async loop")
-            asyncio.get_event_loop().run_until_complete(server)
-            asyncio.get_event_loop().run_forever()
-        self.ws_thread = threading.Thread(target=thread_fun, daemon=True)
-        self.ws_thread.start()
-
-
