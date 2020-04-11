@@ -48,6 +48,17 @@ Whenever a sensor publishes some data, you'll receive some JSON data in the foll
 {"sensortype": "type", "sensorid": "id", "value": "value"}
 ```
 
+### Key generation
+
+Keys are generated using `openssl` (you might also be able to generate them with `ssh-keygen` but I'm not sure). To generate a keypair, install openssl then do the following:
+
+```bash
+openssl genrsa -out id_priv.pem 2048  # replace id with the sensor id
+openssl rsa -in id_priv -outform PEM -pubout -out id_pub.pem
+```
+(replace id with whatever you'll be using for the sensor id)
+
+You'll then need to put this keypair in the appropriate folder, and/or email me the public key to put on the server. (as to what the appropriate folder is, I don't know yet)
 
 # Note to other CPE-4020 groups
 
