@@ -1,7 +1,7 @@
 import unittest
 import json
 
-from main import app, appdata
+from broker.main import app, appdata
 
 exampledata = {"sensortype": "noise",
                "sensorid": "1",
