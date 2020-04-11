@@ -1,8 +1,6 @@
 from broker.keys import Keys
 import asyncio
-import websockets
 import json
-import threading
 
 SOCKET_PORT = 9001
 

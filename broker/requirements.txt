@@ -1,7 +1,7 @@
 aiofiles==0.4.0
 aiounittest==1.3.1
 blinker==1.4
--e git+git@github.com:C-Elegans/4020-pub-sub-sensor.git@4532e497b27655cbc98ac3959331c4a63c1b3486#egg=broker&subdirectory=broker
+-e git+git@github.com:C-Elegans/4020-pub-sub-sensor.git@09adfa682c20eb94cd7af6d7996a6685ef9e89e2#egg=broker&subdirectory=broker
 cffi==1.14.0
 click==7.1.1
 cryptography==2.9
@@ -13,6 +13,7 @@ hyperframe==5.2.0
 itsdangerous==1.1.0
 Jinja2==2.11.1
 MarkupSafe==1.1.1
+nose==1.3.7
 priority==1.3.0
 pycparser==2.20
 PyJWT==1.7.1
