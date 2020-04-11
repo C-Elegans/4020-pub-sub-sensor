@@ -1,6 +1,22 @@
 # 4020-pub-sub-sensor
 
-## Broker API
+## Broker
+
+### Setup/installing dependencies:
+Assuming you have a recent(ish) python (>3.6), run the following in your terminal:
+```bash
+cd broker
+source init_env.sh
+```
+This should create a virtual python environment, install the dependencies needed for this program, and install a development version of this program.
+
+To run, you can then do the following:
+```bash
+python -m broker.main
+```
+
+Tests can be run by navigating to `broker/tests` and running any of
+the python files in there.
 
 ### Publishing
 
@@ -35,4 +51,4 @@ Whenever a sensor publishes some data, you'll receive some JSON data in the foll
 
 # Note to other CPE-4020 groups
 
-Please don't cheat. If you're struggling with your project, please email me, I'll be happy to help. 
+Please don't cheat. If you're struggling with your project, please email me, I'll be happy to help.
