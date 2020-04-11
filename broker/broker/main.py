@@ -1,4 +1,6 @@
 from flask import Flask, request, abort, jsonify
+from broker.keys import Keys
+import jwt
 
 
 PORT = 9000
@@ -20,6 +22,7 @@ class SensorData:
 class AppData:
     def __init__(self):
         self.sensors = {}
+        self.keys = Keys()
 
     def update_sensor(self, stype, name, value):
         self.sensors[name] = SensorData(stype, name, value)
@@ -38,18 +41,24 @@ def index():
 
 @app.route('/api/sensor', methods=['POST', 'PUT'])
 def update_sensor():
-    print(request.json)
-    if not request.json:
+    # Note, DO NOT USE EXCEPT TO GET KEY
+    claimset = jwt.decode(request.data, verify=False, algorithms=['RS256'])
+    if not claimset:
         abort(400)
-    if 'sensorid' not in request.json:
+    if 'sensorid' not in claimset:
         abort(400)
-    if 'sensortype' not in request.json:
+    pub_key = appdata.keys.get_public_key(claimset['sensorid'])
+
+    data = jwt.decode(request.data, pub_key, algorithms=['RS256'])
+    if not data:
         abort(400)
-    if 'value' not in request.json:
+    if 'sensortype' not in data:
         abort(400)
-    sid = request.json.get('sensorid')
-    stype = request.json.get('sensortype')
-    value = request.json.get('value')
+    if 'value' not in data:
+        abort(400)
+    sid = data['sensorid']
+    stype = data['sensortype']
+    value = data['value']
     appdata.update_sensor(stype, sid, value)
     return "OK"
 
