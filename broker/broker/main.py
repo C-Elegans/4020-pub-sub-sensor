@@ -46,4 +46,5 @@ def get_sensor():
 
 
 if __name__ == '__main__':
+    appdata.start_publisher_server()
     app.run(debug=False, port=PORT)
