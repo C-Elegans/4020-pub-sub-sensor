@@ -20,7 +20,7 @@ the python files in there.
 
 ### Publishing
 
-To publish a sensor value, submit a HTTP POST request to n4abi.com:9000/api/sensor using a JSON Web token of the following format:
+To publish a sensor value, submit a HTTP POST request to `n4abi.com:9000/api/sensor` using a JSON Web token of the following format:
 
 header:
 ```json
@@ -32,6 +32,10 @@ body:
 ```
 signature:
 RS256 type signature. (Tyler I will help you out with this part)
+
+### Polling
+
+To get sensor data without subscribing, submit a HTTP GET request to `n4abi.com:9000/api/sensor`. It will return a JSON array of responses like those returned under Subscribing
 
 ### Subscribing
 
