@@ -12,8 +12,8 @@ app = Quart(__name__)
 
 
 appdata = AppData()
-appdata.keys.enable_example = True
-appdata.keys.load_example('1')
+appdata.keys.load_keys_from_directory('keys/')
+print(appdata.keys._private_keys)
 
 
 def collect_websocket(func):

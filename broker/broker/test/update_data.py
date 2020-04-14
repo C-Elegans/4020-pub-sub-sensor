@@ -7,14 +7,13 @@ port = 9000
 host = 'localhost'
 
 keys = Keys()
-keys.enable_example = True
-keys.load_example('ex')
+keys.load_private_key('1', '../keys/1_priv.pem')
 
 exampledata = {"sensortype": "noise",
                "sensorid": "1",
                "value": "-93dB"}
 
-token = jwt.encode(exampledata, keys.get_private_key('ex'), "RS256")
+token = jwt.encode(exampledata, keys.get_private_key('1'), "RS256")
 print(token)
 
 url = 'http://{}:{}/api/sensor'.format(host, port)

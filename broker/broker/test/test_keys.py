@@ -18,6 +18,8 @@ class KeysTestCase(unittest.TestCase):
         keys = Keys()
         keys.enable_example = True
         keys.load_keys("ex", example_private_key, example_public_key)
+        assert('ex' in keys._private_keys)
+        assert('ex' in keys._public_keys)
 
 if __name__ == "__main__":
     unittest.main()
