@@ -4,15 +4,17 @@ from functools import wraps
 import asyncio
 import jwt
 import json
+import os
 
 
 PORT = 9000
 app = Quart(__name__)
 
 
+file_dir = os.path.dirname(os.path.realpath(__file__))
 
 appdata = AppData()
-appdata.keys.load_keys_from_directory('keys/')
+appdata.keys.load_keys_from_directory(os.path.join(file_dir, 'keys'))
 print(appdata.keys._private_keys)
 
 

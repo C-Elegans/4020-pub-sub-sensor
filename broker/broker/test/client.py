@@ -1,7 +1,7 @@
 import asyncio
 import websockets
 
-data = '{"cmd": "subscribe", "sensorid": "1"}'
+data = '{"cmd": "subscribe", "sensorid": "ex"}'
 
 async def test():
     uri = "ws://localhost:9000/api/subscribe"

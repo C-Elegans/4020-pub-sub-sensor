@@ -6,14 +6,15 @@ from broker.keys import Keys
 port = 9000
 host = 'localhost'
 
+sensorname = "ex"
 keys = Keys()
-keys.load_private_key('1', '../keys/1_priv.pem')
+keys.load_private_key(sensorname, '../keys/ex_priv.pem')
 
 exampledata = {"sensortype": "noise",
-               "sensorid": "1",
+               "sensorid": sensorname,
                "value": "-93dB"}
 
-token = jwt.encode(exampledata, keys.get_private_key('1'), "RS256")
+token = jwt.encode(exampledata, keys.get_private_key(sensorname), "RS256")
 print(token)
 
 url = 'http://{}:{}/api/sensor'.format(host, port)
