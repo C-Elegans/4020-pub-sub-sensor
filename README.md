@@ -10,13 +10,21 @@ source init_env.sh
 ```
 This should create a virtual python environment, install the dependencies needed for this program, and install a development version of this program.
 
+Next, if you want to run the included `update_data.py` program, you'll need to generate a keypair by doing the following (this assumes you have openssl installed):
+
+```bash
+./gen_keys.sh ex
+```
+
 To run, you can then do the following:
 ```bash
 python -m broker.main
 ```
 
 Tests can be run by navigating to `broker/tests` and running any of
-the python files in there.
+the python files in there. For instance, running `update_data.py` will
+simulate a sensor sending some data to the broker. And running
+`client.py` will simulate some application subscribing to the broker.
 
 ### Publishing
 
@@ -54,15 +62,12 @@ Whenever a sensor publishes some data, you'll receive some JSON data in the foll
 
 ### Key generation
 
-Keys are generated using `openssl` (you might also be able to generate them with `ssh-keygen` but I'm not sure). To generate a keypair, install openssl then do the following:
-
+To publish data to the broker from your own sensor, you'll need to generate an RSA keypair. This can be done by using the included `gen_keys.sh` utility. Simply pass the name you'll be using for the `sensorid` field to the script like so:
 ```bash
-openssl genrsa -out id_priv.pem 2048  # replace id with the sensor id
-openssl rsa -in id_priv -outform PEM -pubout -out id_pub.pem
+./gen_keys.sh sensor1
 ```
-(replace id with whatever you'll be using for the sensor id)
 
-You'll then need to put this keypair in the appropriate folder, and/or email me the public key to put on the server. (as to what the appropriate folder is, I don't know yet)
+The script will generate a private/public keypair in `broker/keys`. This can be directly used by the broker if you're running it locally, but in order to update the broker at `n4abi.com`, you'll need to email me (Michael) the public key so I can install it on the server.
 
 # Note to other CPE-4020 groups
 
