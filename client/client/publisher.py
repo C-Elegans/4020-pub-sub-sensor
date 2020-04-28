@@ -7,17 +7,17 @@ from client.keys import Keys
 
 # setup connection
 port = 9000
-host = '192.168.1.3'
+host = 'n4abi.com'
 
 # define sensor
 sensorname = "button"
-GPIO.setup("P8_12", GPIO.IN)  # button connects pin 3(3.3v) to pin
+GPIO.setup("P8_14", GPIO.IN)  # button connects pin 3(3.3v) to pin
 # 8.12. A pull down resistor connects to pin 12 and 8.1(GND)
 pressValue = "not_pressed"
 
 # create keys
 keys = Keys()
-keys.load_private_key(sensorname, '../keys/%s_priv.pem' % sensorname)
+keys.load_private_key(sensorname, 'keys/%s_priv.pem' % sensorname)
 
 
 while True:
