@@ -3,6 +3,7 @@ import requests
 import os
 import queue
 import threading
+import time
 import Adafruit_BBIO.GPIO as GPIO
 
 from client.keys import Keys
@@ -22,12 +23,13 @@ pressValue = "not_pressed"
 keys = Keys()
 keys.load_private_key(sensorname, 'keys/%s_priv.pem' % sensorname)
 
-pin_changes = queue.Queue()
+pin_changes = queue.Queue(8)
 
 
 
 def handle_pin_thread():
-    while True:
+    def callback(arg):
+        print(arg)
         if GPIO.input(pin):
             pressValue = "not_pressed"
         else:
@@ -35,7 +37,10 @@ def handle_pin_thread():
 
         print(pressValue)
         pin_changes.put(pressValue)
-        GPIO.wait_for_edge(pin, GPIO.BOTH)
+    GPIO.add_event_detect(pin, GPIO.BOTH, callback=callback, bouncetime=100)
+    #GPIO.add_event_callback(pin, callback=callback, bouncetime=20)
+    while True:
+        time.sleep(0.1)
 
 def post_to_server_thread():
     while True:
