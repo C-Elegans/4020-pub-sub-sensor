@@ -29,6 +29,16 @@ def collect_websocket(func):
             appdata.connected_websockets.remove(queue)
     return wrapper
 
+
+async def send_if_matches(msg, requested_id, requested_type, websocket):
+    if requested_id and msg['sensorid'] != requested_id:
+        return
+    if requested_type and msg['sensortype'] != requested_type:
+        return
+    msg = json.dumps(msg)
+    await websocket.send(msg)
+
+
 @app.route('/')
 def index():
     return "Hello, World!"
@@ -73,14 +83,15 @@ async def ws(queue):
     requested_type = None
     if 'sensortype' in data:
         requested_type = data['sensortype']
+
+    initial_values = appdata.get_all_sensors()
+    for msg in initial_values:
+        await send_if_matches(msg, requested_id, requested_type,
+                              websocket)
     while True:
         msg = await queue.get()
-        if requested_id and msg['sensorid'] != requested_id:
-            continue
-        if requested_type and msg['sensortype'] != requested_type:
-            continue
-        msg = json.dumps(msg)
-        await websocket.send(msg)
+        await send_if_matches(msg, requested_id, requested_type,
+                              websocket)
 
 @app.route('/api/sensor', methods=['GET'])
 def get_sensor():
