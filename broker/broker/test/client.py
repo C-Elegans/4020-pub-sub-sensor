@@ -1,10 +1,10 @@
 import asyncio
 import websockets
 
-data = '{"cmd": "subscribe", "sensorid": "ex"}'
+data = '{"cmd": "subscribe", "sensorid": "button"}'
 
 async def test():
-    uri = "ws://localhost:9000/api/subscribe"
+    uri = "ws://n4abi.com:9000/api/subscribe"
     async with websockets.connect(uri) as websocket:
         await websocket.send(data)
         while True:
