@@ -83,15 +83,13 @@ async def handle_logic():
             heat = heat_value
         if heat > 80:
             print("Fire!")
-	    PWM.start("P8_13", 25, 1000)
-
-	    
+            PWM.start("P8_13", 25, 1000)
         else:
             if button_event.is_set():
                 print("Reset!")
-		PWM.stop("P8_13")
+                PWM.stop("P8_13")
                 PWM.cleanup()
-       	 	button_event.clear()
+                button_event.clear()
 
 
 loop = asyncio.get_event_loop()
