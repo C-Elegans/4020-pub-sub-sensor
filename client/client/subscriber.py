@@ -21,11 +21,9 @@ async def subscribe_to_n4abi():
         while True:
             resp = await websocket.recv()
             jdata = json.loads(resp)
-            print(jdata)
             status = jdata['value']
             prev_value = button_value
             value = 1 if status == 'pressed' else 0
-            print(value, prev_value)
             button_value = value
             if value == 1 and prev_value == 0:
                 print("Notifying button_event")
@@ -60,13 +58,10 @@ async def poll_spencer():
         await asyncio.sleep(1)
 
 
-async def handle_fire():
-    heat_event.clear()
-    print("Fire!")
 
-async def handle_reset():
-    button_event.clear()
-    print("Reset!")
+
+
+    
 
 async def handle_logic():
     print("handle logic")
@@ -77,11 +72,17 @@ async def handle_logic():
                                            return_when=asyncio.FIRST_COMPLETED)
         for task in pending:
             task.cancel()
-        if h in done:
-            await handle_fire()
-        if b in done:
-            await handle_reset()
 
+        # Handle fire detector value update or button press
+        heat_event.clear()
+        async with heat_lock:
+            heat = heat_value
+        if heat > 80:
+            print("Fire!")
+        else:
+            if button_event.is_set():
+                print("Reset!")
+        button_event.clear()
 
 
 loop = asyncio.get_event_loop()
