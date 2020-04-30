@@ -3,6 +3,8 @@ import websockets
 import requests
 import re
 import json
+import Adafruit_BBIO.GPIO as GPIO
+import Adafruit_BBIO.PWM as PWM
 
 data = '{"cmd": "subscribe", "sensorid": "button"}'
 
@@ -79,10 +81,15 @@ async def handle_logic():
             heat = heat_value
         if heat > 80:
             print("Fire!")
+	    PWM.start("P8_13", 25, 1000)
+
+	    
         else:
             if button_event.is_set():
                 print("Reset!")
-        button_event.clear()
+		PWM.stop("P8_13")
+                PWM.cleanup()
+       	 	button_event.clear()
 
 
 loop = asyncio.get_event_loop()
