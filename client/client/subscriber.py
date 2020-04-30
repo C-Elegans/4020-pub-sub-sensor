@@ -35,6 +35,7 @@ async def update_heat(heat):
     async with heat_lock:
         prev_heat = heat_value
     heat = float(heat)
+    print(heat)
     if prev_heat != heat:
         heat_value = heat
         print("Notifying heat_event")
@@ -42,18 +43,19 @@ async def update_heat(heat):
 
 
 async def poll_spencer():
-    uri = "http://localhost:8000/sensors.txt"
+    uri = "http://73.43.115.119:49999/api/subscribe"
     loop = asyncio.get_event_loop()
     while True:
         fut = loop.run_in_executor(None, requests.get, uri)
         resp = await fut
         data = resp.text
         data = data.replace('Sensors:\n\n', '')
+        #print(data)
         lines = data.splitlines()
         for line in lines:
             if line:
                 key, value = line.split(':')
-                if key == 'heat':
+                if key == 'ProfessionalThermistor':
                     await update_heat(value)
         await asyncio.sleep(1)
 
