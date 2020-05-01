@@ -13,7 +13,7 @@ button_value = 0
 
 heat_event = asyncio.Event()
 heat_lock = asyncio.Lock()
-heat_value = 0
+is_smoke = False
 
 async def subscribe_to_n4abi():
     global button_value
@@ -32,14 +32,14 @@ async def subscribe_to_n4abi():
                 button_event.set()
 
 
-async def update_heat(heat):
-    global heat_value
+async def update_smoke(smoke):
+    global is_smoke
     async with heat_lock:
-        prev_heat = heat_value
-    heat = float(heat)
-    print(heat)
-    if prev_heat != heat:
-        heat_value = heat
+        prev_smoke = is_smoke
+    smoke = False if smoke == "false" else True
+    print(smoke)
+    if smoke != prev_smoke:
+        is_smoke = smoke
         print("Notifying heat_event")
         heat_event.set()
 
@@ -57,8 +57,8 @@ async def poll_spencer():
         for line in lines:
             if line:
                 key, value = line.split(':')
-                if key == 'ProfessionalThermistor':
-                    await update_heat(value)
+                if key == 'SmokeDetector':
+                    await update_smoke(value)
         await asyncio.sleep(1)
 
 
@@ -80,8 +80,8 @@ async def handle_logic():
         # Handle fire detector value update or button press
         heat_event.clear()
         async with heat_lock:
-            heat = heat_value
-        if heat > 80:
+            smoke = is_smoke
+        if smoke:
             print("Fire!")
             PWM.start("P8_13", 25, 1000)
         else:
