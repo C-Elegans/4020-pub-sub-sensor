@@ -11,8 +11,8 @@ data = '{"cmd": "subscribe", "sensorid": "button"}'
 button_event = asyncio.Event()
 button_value = 0
 
-heat_event = asyncio.Event()
-heat_lock = asyncio.Lock()
+smoke_event = asyncio.Event()
+smoke_lock = asyncio.Lock()
 is_smoke = False
 
 async def subscribe_to_n4abi():
@@ -34,14 +34,14 @@ async def subscribe_to_n4abi():
 
 async def update_smoke(smoke):
     global is_smoke
-    async with heat_lock:
+    async with smoke_lock:
         prev_smoke = is_smoke
     smoke = False if smoke == "false" else True
     print(smoke)
     if smoke != prev_smoke:
         is_smoke = smoke
-        print("Notifying heat_event")
-        heat_event.set()
+        print("Notifying smoke_event")
+        smoke_event.set()
 
 
 async def poll_spencer():
@@ -70,7 +70,7 @@ async def poll_spencer():
 async def handle_logic():
     print("handle logic")
     while True:
-        h = asyncio.ensure_future(heat_event.wait())
+        h = asyncio.ensure_future(smoke_event.wait())
         b = asyncio.ensure_future(button_event.wait())
         done, pending = await asyncio.wait({h, b},
                                            return_when=asyncio.FIRST_COMPLETED)
@@ -78,8 +78,8 @@ async def handle_logic():
             task.cancel()
 
         # Handle fire detector value update or button press
-        heat_event.clear()
-        async with heat_lock:
+        smoke_event.clear()
+        async with smoke_lock:
             smoke = is_smoke
         if smoke:
             print("Fire!")
